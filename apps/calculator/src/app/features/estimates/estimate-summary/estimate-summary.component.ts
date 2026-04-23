@@ -27,15 +27,12 @@ export class EstimateSummaryComponent {
   downloadPdf(): void {
     this.isGeneratingPdf = true;
     this.pdfError = '';
-    this.pdfService.generate(this.estimate).subscribe({
-      next: (blob) => {
-        this.pdfService.downloadBlob(blob, `${this.estimate.name.replace(/\s+/g, '-')}-estimate.pdf`);
-        this.isGeneratingPdf = false;
-      },
-      error: () => {
-        this.pdfError = 'PDF generation failed. Make sure the API server is running.';
-        this.isGeneratingPdf = false;
-      },
-    });
+    try {
+      this.pdfService.generate(this.estimate);
+    } catch {
+      this.pdfError = 'PDF generation failed. Please try again.';
+    } finally {
+      this.isGeneratingPdf = false;
+    }
   }
 }
