@@ -1,0 +1,9 @@
+{
+  "name": "calculator-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/calculator-e2e/src",
+  "implicitDependencies": ["calculator"],
+  "// targets": "to see all targets run: nx show project calculator-e2e --web",
+  "targets": {}
+}

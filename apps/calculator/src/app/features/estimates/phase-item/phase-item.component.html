@@ -1,0 +1,52 @@
+<div class="phase-card">
+  <div class="phase-header" (click)="collapsed = !collapsed">
+    <div class="phase-left">
+      <span class="collapse-icon" [class.collapsed]="collapsed">▾</span>
+      <input
+        [formControl]="nameControl"
+        type="text"
+        class="phase-name-input"
+        placeholder="Phase name"
+        (click)="$event.stopPropagation()"
+      />
+    </div>
+    <div class="phase-right">
+      <span class="phase-summary">
+        {{ totals.totalHours | number: '1.0-1' }}h
+        &nbsp;·&nbsp;
+        <strong>{{ formattedTotal }}</strong>
+      </span>
+      <button class="btn-remove-phase" (click)="removePhase(); $event.stopPropagation()" title="Remove phase">✕</button>
+    </div>
+  </div>
+
+  @if (!collapsed) {
+    <div class="phase-body">
+      @if (phase.tasks.length > 0) {
+        <div class="tasks-header">
+          <span>Task</span>
+          <span>Hours</span>
+          <span>Persons</span>
+          <span>Rate Override</span>
+          <span class="align-right">Totals</span>
+          <span></span>
+        </div>
+        @for (task of phase.tasks; track task.id) {
+          <app-task-row
+            [task]="task"
+            [phase]="phase"
+            [estimate]="estimate"
+            (taskChange)="updateTask(task.id, $event)"
+            (removeTask)="removeTask(task.id)"
+          />
+        }
+      } @else {
+        <div class="no-tasks">No tasks yet. Add one below.</div>
+      }
+
+      <button class="btn btn-ghost add-task-btn" (click)="addTask()">
+        + Add Task
+      </button>
+    </div>
+  }
+</div>

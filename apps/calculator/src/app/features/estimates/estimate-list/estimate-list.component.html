@@ -1,0 +1,44 @@
+<div class="list-page">
+  <div class="page-header">
+    <div>
+      <h1>Project Estimates</h1>
+      <p class="subtitle">Manage and track your digital project budgets</p>
+    </div>
+    <button class="btn btn-primary" (click)="newEstimate()">
+      <span class="btn-icon">+</span> New Estimate
+    </button>
+  </div>
+
+  @if (store.saved().length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">◈</div>
+      <h2>No estimates yet</h2>
+      <p>Create your first project estimate to get started.</p>
+      <button class="btn btn-primary" (click)="newEstimate()">Create Estimate</button>
+    </div>
+  } @else {
+    <div class="estimate-grid">
+      @for (est of store.saved(); track est.id) {
+        <div class="estimate-card" (click)="openEstimate(est.id)">
+          <div class="card-header">
+            <div class="card-title">{{ est.name }}</div>
+            <button class="btn-icon-only danger" (click)="deleteEstimate($event, est.id)" title="Delete">✕</button>
+          </div>
+          @if (est.client) {
+            <div class="card-client">{{ est.client }}</div>
+          }
+          @if (est.description) {
+            <div class="card-desc">{{ est.description }}</div>
+          }
+          <div class="card-meta">
+            <span class="meta-tag">{{ est.phases.length }} phase{{ est.phases.length !== 1 ? 's' : '' }}</span>
+            <span class="meta-tag currency">{{ est.currency }}</span>
+          </div>
+          <div class="card-footer">
+            <span class="card-date">{{ est.updatedAt | date: 'MMM d, y' }}</span>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

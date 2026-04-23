@@ -1,0 +1,47 @@
+<div class="summary-panel">
+  <div class="summary-header">
+    <h3>Summary</h3>
+    <div class="summary-currency">{{ estimate.currency }}</div>
+  </div>
+
+  <div class="totals-block">
+    <div class="total-row grand">
+      <span>Total Hours</span>
+      <span>{{ totals.grandTotalHours | number: '1.0-1' }} h</span>
+    </div>
+    <div class="total-row grand accent">
+      <span>Total Cost</span>
+      <span>{{ fmt(totals.grandTotalCost) }}</span>
+    </div>
+  </div>
+
+  @if (totals.byPhase.length > 0) {
+    <div class="phase-breakdown">
+      <div class="breakdown-title">By Phase</div>
+      @for (p of totals.byPhase; track p.phaseId) {
+        <div class="breakdown-row">
+          <span class="phase-name">{{ p.phaseName }}</span>
+          <span class="phase-hours">{{ p.totalHours | number: '1.0-1' }}h</span>
+          <span class="phase-cost">{{ fmt(p.totalCost) }}</span>
+        </div>
+      }
+    </div>
+  }
+
+  <div class="summary-actions">
+    <button
+      class="btn btn-primary full-width"
+      (click)="downloadPdf()"
+      [disabled]="isGeneratingPdf"
+    >
+      @if (isGeneratingPdf) {
+        <span class="spinner"></span> Generating...
+      } @else {
+        ↓ Download PDF
+      }
+    </button>
+    @if (pdfError) {
+      <div class="error-msg">{{ pdfError }}</div>
+    }
+  </div>
+</div>

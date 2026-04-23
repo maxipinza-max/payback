@@ -1,0 +1,78 @@
+<div class="editor-page">
+  <!-- Actions bar -->
+  <div class="actions-bar">
+    <a routerLink="/estimates" class="btn btn-ghost back-btn">← Back</a>
+    <div class="actions-right">
+      <button class="btn btn-ghost" (click)="exportJson()">Export JSON</button>
+      <button class="btn btn-primary" (click)="saveEstimate()">
+        @if (saved) { ✓ Saved } @else { Save }
+      </button>
+    </div>
+  </div>
+
+  <div class="editor-layout" [formGroup]="form">
+    <!-- Left: editor -->
+    <div class="editor-main">
+      <!-- Header form -->
+      <div class="section-card header-form">
+        <div class="form-row two-col">
+          <div class="field">
+            <label>Project Name *</label>
+            <input formControlName="name" type="text" class="input" placeholder="My Digital Project" />
+          </div>
+          <div class="field">
+            <label>Client</label>
+            <input formControlName="client" type="text" class="input" placeholder="Client name" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label>Description</label>
+            <textarea formControlName="description" class="input textarea" rows="2" placeholder="Brief project description..."></textarea>
+          </div>
+        </div>
+        <div class="form-row two-col">
+          <div class="field">
+            <label>Global Hourly Rate</label>
+            <div class="input-with-prefix">
+              <span class="prefix">{{ estimate.currency === 'CLP' ? '$' : '$' }}</span>
+              <input formControlName="globalHourlyRate" type="number" class="input" min="0" placeholder="50" />
+            </div>
+          </div>
+          <div class="field">
+            <label>Currency</label>
+            <select formControlName="currency" class="input select">
+              @for (c of currencies; track c[0]) {
+                <option [value]="c[0]">{{ c[0] }} — {{ c[1].label }}</option>
+              }
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phases -->
+      <div class="phases-section">
+        <div class="section-title">
+          <h2>Phases & Tasks</h2>
+          <button class="btn btn-ghost" (click)="addPhase()">+ Add Phase</button>
+        </div>
+
+        @if (estimate.phases.length === 0) {
+          <div class="empty-phases">
+            <p>No phases yet. Add a phase to start building your estimate.</p>
+            <button class="btn btn-primary" (click)="addPhase()">+ Add First Phase</button>
+          </div>
+        } @else {
+          @for (phase of estimate.phases; track phase.id) {
+            <app-phase-item [phase]="phase" [estimate]="estimate" />
+          }
+        }
+      </div>
+    </div>
+
+    <!-- Right: summary -->
+    <aside class="editor-sidebar">
+      <app-estimate-summary />
+    </aside>
+  </div>
+</div>

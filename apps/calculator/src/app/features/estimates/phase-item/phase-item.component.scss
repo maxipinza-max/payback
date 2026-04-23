@@ -1,0 +1,121 @@
+.phase-card {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+  transition: border-color 0.2s;
+
+  &:hover {
+    border-color: var(--border-hover);
+  }
+}
+
+.phase-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.875rem 1rem;
+  cursor: pointer;
+  background: var(--surface-1);
+  user-select: none;
+
+  &:hover {
+    background: var(--surface-2);
+  }
+}
+
+.phase-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.collapse-icon {
+  color: var(--text-muted);
+  font-size: 1rem;
+  transition: transform 0.2s;
+
+  &.collapsed {
+    transform: rotate(-90deg);
+  }
+}
+
+.phase-name-input {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0;
+  min-width: 200px;
+
+  &:focus {
+    outline: none;
+    color: var(--accent);
+  }
+}
+
+.phase-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.phase-summary {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+
+  strong {
+    color: var(--accent);
+  }
+}
+
+.btn-remove-phase {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+
+  &:hover {
+    color: var(--danger);
+    background: rgba(var(--danger-rgb), 0.1);
+  }
+}
+
+.phase-body {
+  padding: 0.75rem 1rem 1rem;
+  border-top: 1px solid var(--border);
+  background: var(--surface-0);
+}
+
+.tasks-header {
+  display: grid;
+  grid-template-columns: 1fr 90px 90px 110px 160px 36px;
+  gap: 0.5rem;
+  padding: 0 0.75rem 0.4rem;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+
+  .align-right {
+    text-align: right;
+  }
+}
+
+.no-tasks {
+  padding: 1rem 0.75rem;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-style: italic;
+}
+
+.add-task-btn {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+}

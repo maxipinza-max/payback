@@ -1,0 +1,22 @@
+<div class="task-row" [formGroup]="form">
+  <div class="task-name">
+    <input formControlName="name" type="text" class="input" placeholder="Task name" />
+  </div>
+  <div class="task-field">
+    <input formControlName="hoursRequired" type="number" class="input num" min="0" placeholder="Hrs" />
+    <label class="field-label">Hours</label>
+  </div>
+  <div class="task-field">
+    <input formControlName="numberOfPersons" type="number" class="input num" min="1" placeholder="Persons" />
+    <label class="field-label">Persons</label>
+  </div>
+  <div class="task-field">
+    <input formControlName="hourlyRateOverride" type="number" class="input num" min="0" placeholder="—" />
+    <label class="field-label">Rate Override</label>
+  </div>
+  <div class="task-totals">
+    <span class="total-hours">{{ totals.totalHours | number: '1.0-1' }}h</span>
+    <span class="total-cost">{{ totals.totalCost | number: '1.0-0' }}</span>
+  </div>
+  <button class="btn-remove" (click)="removeTask.emit()" title="Remove task">✕</button>
+</div>

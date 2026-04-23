@@ -1,0 +1,84 @@
+.task-row {
+  display: grid;
+  grid-template-columns: 1fr 90px 90px 110px 160px 36px;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  background: var(--surface-0);
+  border: 1px solid transparent;
+  transition: border-color 0.15s;
+
+  &:hover {
+    border-color: var(--border);
+  }
+}
+
+.task-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.field-label {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.input {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  padding: 0.4rem 0.6rem;
+  font-size: 0.875rem;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+
+  &:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  &.num {
+    text-align: right;
+  }
+}
+
+.task-totals {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.total-hours {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.total-cost {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.btn-remove {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 4px;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+  line-height: 1;
+
+  &:hover {
+    color: var(--danger);
+    background: rgba(var(--danger-rgb), 0.1);
+  }
+}

@@ -1,8 +1,46 @@
-# New Nx Repository
+# Kaufmann Lab Calculator
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+A dark, modern digital project cost & time estimator built with **Angular** (frontend) and **NestJS** (backend PDF generation), powered by an **Nx** monorepo.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+## Features
+- Create project estimates with multiple phases and tasks
+- Per-task inputs: hours required × number of persons
+- Flexible rate hierarchy: global → phase → task override
+- Live totals calculation in real time
+- Currency support: **USD** and **CLP**
+- PDF download via NestJS + pdfmake
+- JSON export/import
+- LocalStorage persistence (no database needed)
+- Dark, sleek UI
+
+## Project Structure
+
+```
+apps/
+  calculator/   ← Angular 21 frontend
+  api/          ← NestJS backend (PDF generation)
+libs/
+  shared-types/ ← Shared models + calculation utils
+```
+
+## Getting Started
+
+```bash
+npm install
+
+# Run frontend (http://localhost:4200)
+npm run start:web
+
+# Run backend — required for PDF download (http://localhost:3000/api)
+npm run start:api
+```
+
+## Deploy to GitHub Pages
+
+1. Update `apps/calculator/src/app/environments/environment.prod.ts` with your API URL
+2. Run `npm run deploy`
+
+---
 
 [Learn more about this workspace setup and its capabilities](https://nx.dev/nx-api/js?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
 ## Finish your Nx platform setup
