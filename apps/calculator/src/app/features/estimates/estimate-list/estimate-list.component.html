@@ -19,24 +19,56 @@
   } @else {
     <div class="estimate-grid">
       @for (est of store.saved(); track est.id) {
+        @let totals = getTotals(est);
         <div class="estimate-card" (click)="openEstimate(est.id)">
+
           <div class="card-header">
             <div class="card-title">{{ est.name }}</div>
             <button class="btn-icon-only danger" (click)="deleteEstimate($event, est.id)" title="Delete">✕</button>
           </div>
+
           @if (est.client) {
             <div class="card-client">{{ est.client }}</div>
           }
           @if (est.description) {
             <div class="card-desc">{{ est.description }}</div>
           }
-          <div class="card-meta">
-            <span class="meta-tag">{{ est.phases.length }} phase{{ est.phases.length !== 1 ? 's' : '' }}</span>
-            <span class="meta-tag currency">{{ est.currency }}</span>
+
+          <!-- Price highlight -->
+          <div class="card-price-block">
+            <div class="price-total">
+              <span class="price-label">Total Cost</span>
+              <span class="price-value">{{ fmt(totals.grandTotalCost, est.currency) }}</span>
+            </div>
+            <div class="price-hours">
+              <span class="hours-value">{{ totals.grandTotalHours | number:'1.0-1' }}</span>
+              <span class="hours-label">hrs</span>
+            </div>
           </div>
+
+          <!-- Phase breakdown -->
+          @if (totals.byPhase.length > 0) {
+            <div class="phase-breakdown">
+              @for (phase of totals.byPhase; track phase.phaseId) {
+                <div class="phase-row">
+                  <span class="phase-name">{{ phase.phaseName }}</span>
+                  <span class="phase-hours">{{ phase.totalHours | number:'1.0-1' }}h</span>
+                  <span class="phase-cost">{{ fmt(phase.totalCost, est.currency) }}</span>
+                </div>
+              }
+            </div>
+          }
+
+          <!-- Footer -->
           <div class="card-footer">
+            <div class="card-tags">
+              <span class="meta-tag">{{ est.phases.length }} phase{{ est.phases.length !== 1 ? 's' : '' }}</span>
+              <span class="meta-tag">{{ totalTasks(est) }} task{{ totalTasks(est) !== 1 ? 's' : '' }}</span>
+              <span class="meta-tag currency">{{ est.currency }}</span>
+            </div>
             <span class="card-date">{{ est.updatedAt | date: 'MMM d, y' }}</span>
           </div>
+
         </div>
       }
     </div>

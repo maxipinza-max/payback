@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { EstimateStore } from '../../../core/services/estimate.store';
-import { formatCurrency } from '@kaufmann-lab-calculator/shared-types';
+import { Estimate, EstimateTotals, computeEstimateTotals, formatCurrency } from '@kaufmann-lab-calculator/shared-types';
 
 @Component({
   selector: 'app-estimate-list',
@@ -30,7 +30,15 @@ export class EstimateListComponent {
     this.store.delete(id);
   }
 
-  formatTotal(amount: number, currency: 'USD' | 'CLP'): string {
+  getTotals(est: Estimate): EstimateTotals {
+    return computeEstimateTotals(est);
+  }
+
+  fmt(amount: number, currency: 'USD' | 'CLP'): string {
     return formatCurrency(amount, currency);
+  }
+
+  totalTasks(est: Estimate): number {
+    return est.phases.reduce((s, p) => s + p.tasks.length, 0);
   }
 }
