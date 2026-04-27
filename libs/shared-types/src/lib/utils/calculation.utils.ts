@@ -29,17 +29,29 @@ export function computePhaseTotals(phase: Phase, estimate: Estimate): PhaseTotal
   );
 }
 
+export const IVA_RATE = 0.19;
+
 export function computeEstimateTotals(estimate: Estimate): EstimateTotals {
   const byPhase = estimate.phases.map((phase: Phase) => {
     const totals = computePhaseTotals(phase, estimate);
     return { phaseId: phase.id, phaseName: phase.name, ...totals };
   });
 
+  const grandTotalCost = byPhase.reduce((s: number, p: PhaseTotals) => s + p.totalCost, 0);
+  const iva = estimate.includeIva ? grandTotalCost * IVA_RATE : 0;
+
   return {
     grandTotalHours: byPhase.reduce((s: number, p: PhaseTotals) => s + p.totalHours, 0),
-    grandTotalCost: byPhase.reduce((s: number, p: PhaseTotals) => s + p.totalCost, 0),
+    grandTotalCost,
+    iva,
+    grandTotalBruto: grandTotalCost + iva,
     byPhase,
   };
+}
+
+export function computeIvaBreakdown(neto: number, includeIva: boolean): { neto: number; iva: number; bruto: number } {
+  const iva = includeIva ? neto * IVA_RATE : 0;
+  return { neto, iva, bruto: neto + iva };
 }
 
 export function formatCurrency(amount: number, currency: 'USD' | 'CLP'): string {

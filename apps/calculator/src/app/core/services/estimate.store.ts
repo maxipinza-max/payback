@@ -17,6 +17,7 @@ function blankEstimate(): Estimate {
     client: '',
     globalHourlyRate: 50,
     currency: 'USD',
+    includeIva: false,
     phases: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -45,7 +46,11 @@ export class EstimateStore {
     this._estimate.set(blankEstimate());
   }
 
-  updateHeader(patch: Partial<Pick<Estimate, 'name' | 'description' | 'client' | 'globalHourlyRate' | 'currency'>>): void {
+  toggleIva(): void {
+    this._estimate.update((e) => ({ ...e, includeIva: !e.includeIva }));
+  }
+
+  updateHeader(patch: Partial<Pick<Estimate, 'name' | 'description' | 'client' | 'globalHourlyRate' | 'currency' | 'includeIva'>>): void {
     this._estimate.update((e) => ({ ...e, ...patch }));
   }
 

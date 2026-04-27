@@ -1,23 +1,44 @@
 <div class="summary-panel">
   <div class="summary-header">
-    <h3>Summary</h3>
+    <h3>Resumen</h3>
     <div class="summary-currency">{{ estimate.currency }}</div>
   </div>
 
+  <!-- Hours -->
   <div class="totals-block">
-    <div class="total-row grand">
-      <span>Total Hours</span>
+    <div class="total-row">
+      <span>Total Horas</span>
       <span>{{ totals.grandTotalHours | number: '1.0-1' }} h</span>
-    </div>
-    <div class="total-row grand accent">
-      <span>Total Cost</span>
-      <span>{{ fmt(totals.grandTotalCost) }}</span>
     </div>
   </div>
 
+  <!-- Cost breakdown -->
+  <div class="cost-breakdown">
+    <div class="cost-row neto">
+      <span class="cost-label">Monto Neto</span>
+      <span class="cost-value">{{ fmt(totals.grandTotalCost) }}</span>
+    </div>
+
+    @if (estimate.includeIva) {
+      <div class="cost-row iva">
+        <span class="cost-label">
+          IVA <span class="iva-badge">19%</span>
+        </span>
+        <span class="cost-value iva-val">+ {{ fmt(totals.iva) }}</span>
+      </div>
+      <div class="cost-row bruto">
+        <span class="cost-label">Monto Bruto</span>
+        <span class="cost-value bruto-val">{{ fmt(totals.grandTotalBruto) }}</span>
+      </div>
+    } @else {
+      <div class="iva-hint">IVA no incluido — actívalo en el formulario</div>
+    }
+  </div>
+
+  <!-- Phase breakdown -->
   @if (totals.byPhase.length > 0) {
     <div class="phase-breakdown">
-      <div class="breakdown-title">By Phase</div>
+      <div class="breakdown-title">Por Fase</div>
       @for (p of totals.byPhase; track p.phaseId) {
         <div class="breakdown-row">
           <span class="phase-name">{{ p.phaseName }}</span>
@@ -29,15 +50,11 @@
   }
 
   <div class="summary-actions">
-    <button
-      class="btn btn-primary full-width"
-      (click)="downloadPdf()"
-      [disabled]="isGeneratingPdf"
-    >
+    <button class="btn btn-primary full-width" (click)="downloadPdf()" [disabled]="isGeneratingPdf">
       @if (isGeneratingPdf) {
-        <span class="spinner"></span> Generating...
+        <span class="spinner"></span> Generando...
       } @else {
-        ↓ Download PDF
+        ↓ Descargar PDF
       }
     </button>
     @if (pdfError) {

@@ -31,11 +31,11 @@
             <textarea formControlName="description" class="input textarea" rows="2" placeholder="Brief project description..."></textarea>
           </div>
         </div>
-        <div class="form-row two-col">
+        <div class="form-row three-col">
           <div class="field">
             <label>Global Hourly Rate</label>
             <div class="input-with-prefix">
-              <span class="prefix">{{ estimate.currency === 'CLP' ? '$' : '$' }}</span>
+              <span class="prefix">$</span>
               <input formControlName="globalHourlyRate" type="number" class="input" min="0" placeholder="50" />
             </div>
           </div>
@@ -46,6 +46,18 @@
                 <option [value]="c[0]">{{ c[0] }} — {{ c[1].label }}</option>
               }
             </select>
+          </div>
+          <div class="field">
+            <label>IVA (19%)</label>
+            <button
+              type="button"
+              class="iva-toggle"
+              [class.active]="estimate.includeIva"
+              (click)="store.toggleIva()"
+            >
+              <span class="iva-dot"></span>
+              {{ estimate.includeIva ? 'Incluido' : 'No incluido' }}
+            </button>
           </div>
         </div>
       </div>

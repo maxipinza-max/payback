@@ -10,6 +10,7 @@ export interface Estimate {
   client?: string;
   globalHourlyRate: number;
   currency: SupportedCurrency;
+  includeIva: boolean;
   phases: Phase[];
   createdAt: string;
   updatedAt: string;
@@ -17,7 +18,12 @@ export interface Estimate {
 
 export interface EstimateTotals {
   grandTotalHours: number;
+  /** Monto neto (sin IVA) */
   grandTotalCost: number;
+  /** IVA = neto × 0.19  (0 si includeIva es false) */
+  iva: number;
+  /** Monto bruto = neto × 1.19  (igual a neto si includeIva es false) */
+  grandTotalBruto: number;
   byPhase: Array<{ phaseId: string; phaseName: string } & PhaseTotals>;
 }
 

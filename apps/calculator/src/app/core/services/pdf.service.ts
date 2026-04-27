@@ -112,27 +112,63 @@ export class PdfService {
       theme: 'grid',
     });
 
-    // ── Grand totals block ────────────────────────────────────────
+    // ── Totals block ─────────────────────────────────────────────
     const finalY = (doc as any).lastAutoTable.finalY + 8;
+    const blockH = estimate.includeIva ? 38 : 22;
 
     doc.setFillColor(22, 27, 37);
-    doc.roundedRect(14, finalY, pageW - 28, 22, 3, 3, 'F');
+    doc.roundedRect(14, finalY, pageW - 28, blockH, 3, 3, 'F');
 
-    doc.setFontSize(10);
+    // Total hours
+    doc.setFontSize(9);
     doc.setTextColor(158, 173, 200);
     doc.setFont('helvetica', 'normal');
-    doc.text('Total Hours', 20, finalY + 8);
+    doc.text('Total Horas', 20, finalY + 8);
     doc.setTextColor(232, 237, 245);
     doc.setFont('helvetica', 'bold');
     doc.text(`${totals.grandTotalHours.toFixed(1)} h`, pageW - 20, finalY + 8, { align: 'right' });
 
-    doc.setFontSize(13);
-    doc.setTextColor(158, 173, 200);
-    doc.setFont('helvetica', 'normal');
-    doc.text('Total Cost', 20, finalY + 18);
-    doc.setTextColor(79, 140, 255);
-    doc.setFont('helvetica', 'bold');
-    doc.text(fmt(totals.grandTotalCost), pageW - 20, finalY + 18, { align: 'right' });
+    if (estimate.includeIva) {
+      // Separator line
+      doc.setDrawColor(42, 51, 71);
+      doc.line(20, finalY + 12, pageW - 20, finalY + 12);
+
+      // Neto
+      doc.setFontSize(9);
+      doc.setTextColor(158, 173, 200);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Monto Neto', 20, finalY + 19);
+      doc.setTextColor(232, 237, 245);
+      doc.setFont('helvetica', 'bold');
+      doc.text(fmt(totals.grandTotalCost), pageW - 20, finalY + 19, { align: 'right' });
+
+      // IVA
+      doc.setFontSize(9);
+      doc.setTextColor(158, 173, 200);
+      doc.setFont('helvetica', 'normal');
+      doc.text('IVA (19%)', 20, finalY + 27);
+      doc.setTextColor(240, 192, 0);
+      doc.setFont('helvetica', 'bold');
+      doc.text(`+ ${fmt(totals.iva)}`, pageW - 20, finalY + 27, { align: 'right' });
+
+      // Bruto
+      doc.setFontSize(12);
+      doc.setTextColor(158, 173, 200);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Monto Bruto', 20, finalY + 36);
+      doc.setTextColor(79, 140, 255);
+      doc.setFont('helvetica', 'bold');
+      doc.text(fmt(totals.grandTotalBruto), pageW - 20, finalY + 36, { align: 'right' });
+    } else {
+      // No IVA — just show neto as total
+      doc.setFontSize(12);
+      doc.setTextColor(158, 173, 200);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Monto Neto', 20, finalY + 18);
+      doc.setTextColor(79, 140, 255);
+      doc.setFont('helvetica', 'bold');
+      doc.text(fmt(totals.grandTotalCost), pageW - 20, finalY + 18, { align: 'right' });
+    }
 
     // ── Save ──────────────────────────────────────────────────────
     const filename = `${estimate.name.replace(/\s+/g, '-').toLowerCase()}-estimate.pdf`;

@@ -36,9 +36,21 @@
 
           <!-- Price highlight -->
           <div class="card-price-block">
-            <div class="price-total">
-              <span class="price-label">Total Cost</span>
-              <span class="price-value">{{ fmt(totals.grandTotalCost, est.currency) }}</span>
+            <div class="price-left">
+              <div class="price-row neto">
+                <span class="price-label">Neto</span>
+                <span class="price-neto">{{ fmt(totals.grandTotalCost, est.currency) }}</span>
+              </div>
+              @if (est.includeIva) {
+                <div class="price-row iva">
+                  <span class="price-label">IVA <span class="iva-badge">19%</span></span>
+                  <span class="price-iva">+ {{ fmt(totals.iva, est.currency) }}</span>
+                </div>
+                <div class="price-row bruto">
+                  <span class="price-label bruto-lbl">Bruto</span>
+                  <span class="price-bruto">{{ fmt(totals.grandTotalBruto, est.currency) }}</span>
+                </div>
+              }
             </div>
             <div class="price-hours">
               <span class="hours-value">{{ totals.grandTotalHours | number:'1.0-1' }}</span>

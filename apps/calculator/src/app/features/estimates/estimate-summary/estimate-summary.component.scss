@@ -5,13 +5,15 @@
   padding: 1.25rem;
   position: sticky;
   top: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .summary-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
 
   h3 {
     margin: 0;
@@ -29,45 +31,100 @@
   color: var(--accent);
 }
 
+/* Hours block */
 .totals-block {
   background: var(--surface-0);
   border-radius: 8px;
   overflow: hidden;
-  margin-bottom: 1.25rem;
 }
 
 .total-row {
   display: flex;
   justify-content: space-between;
-  padding: 0.75rem 1rem;
+  padding: 0.65rem 1rem;
   font-size: 0.9rem;
   color: var(--text-secondary);
+}
+
+/* Cost breakdown: Neto / IVA / Bruto */
+.cost-breakdown {
+  background: var(--surface-0);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.cost-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.7rem 1rem;
   border-bottom: 1px solid var(--border);
 
   &:last-child { border-bottom: none; }
 
-  &.grand {
-    font-weight: 600;
-    font-size: 1rem;
-    color: var(--text-primary);
+  &.neto {
+    background: var(--surface-0);
   }
 
-  &.accent span:last-child {
+  &.iva {
+    background: rgba(255, 200, 0, 0.04);
+  }
+
+  &.bruto {
+    background: rgba(var(--accent-rgb), 0.07);
+  }
+}
+
+.cost-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.iva-badge {
+  font-size: 0.65rem;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(255, 200, 0, 0.15);
+  color: #f0c000;
+  font-weight: 600;
+}
+
+.cost-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+
+  &.iva-val {
+    color: #f0c000;
+    font-size: 0.9rem;
+  }
+
+  &.bruto-val {
     color: var(--accent);
-    font-size: 1.15rem;
+    font-size: 1.1rem;
   }
 }
 
-.phase-breakdown {
-  margin-bottom: 1.25rem;
+.iva-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  padding: 0.6rem 1rem;
+  font-style: italic;
 }
+
+/* Phase breakdown */
+.phase-breakdown { }
 
 .breakdown-title {
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--text-muted);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
 }
 
 .breakdown-row {
@@ -76,7 +133,7 @@
   gap: 0.5rem;
   padding: 0.4rem 0;
   border-bottom: 1px solid var(--border);
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   align-items: center;
 
   &:last-child { border-bottom: none; }
@@ -91,7 +148,7 @@
 
 .phase-hours {
   color: var(--text-muted);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
 }
 
 .phase-cost {
@@ -99,6 +156,7 @@
   font-weight: 500;
 }
 
+/* Actions */
 .summary-actions {
   display: flex;
   flex-direction: column;
