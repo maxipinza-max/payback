@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Calculadora de Payback</title>
+    <style>
+      :root {
+        --bg: #0d0f14;
+        --surface-0: #10131a;
+        --surface-1: #161b25;
+        --surface-2: #1e2535;
+        --border: #2a3347;
+        --accent: #4f8cff;
+        --success: #3dffa0;
+        --text-primary: #e8edf5;
+        --text-secondary: #9eadc8;
+        --text-muted: #5e708a;
+        --font: Inter, system-ui, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--text-primary);
+        font-family: var(--font);
+      }
+
+      header {
+        border-bottom: 1px solid var(--border);
+        background: var(--surface-1);
+      }
+
+      .header-inner,
+      main {
+        width: min(1200px, calc(100% - 2rem));
+        margin: 0 auto;
+      }
+
+      .header-inner {
+        min-height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .brand {
+        font-weight: 700;
+      }
+
+      main {
+        padding: 2rem 0;
+      }
+
+      h1,
+      h2,
+      p {
+        margin: 0;
+      }
+
+      .heading {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .heading p {
+        margin-top: 0.35rem;
+        color: var(--text-muted);
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      button {
+        border: 1px solid var(--border);
+        background: transparent;
+        color: var(--text-secondary);
+        border-radius: 8px;
+        padding: 0.6rem 0.9rem;
+        cursor: pointer;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 280px minmax(0, 1fr);
+        gap: 1rem;
+      }
+
+      .panel,
+      .metric,
+      .chart,
+      .table-card {
+        background: var(--surface-1);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+      }
+
+      .panel {
+        padding: 1rem;
+        display: grid;
+        gap: 0.9rem;
+      }
+
+      label {
+        display: grid;
+        gap: 0.35rem;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+      }
+
+      input {
+        width: 100%;
+        min-height: 42px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--surface-0);
+        color: var(--text-primary);
+        padding: 0.65rem 0.75rem;
+      }
+
+      .analysis {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.75rem;
+      }
+
+      .metric {
+        padding: 0.9rem 1rem;
+      }
+
+      .metric span {
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        display: block;
+      }
+
+      .metric strong {
+        display: block;
+        margin-top: 0.2rem;
+        font-size: 1.15rem;
+      }
+
+      .metric.accent strong {
+        color: var(--accent);
+      }
+
+      .chart {
+        padding: 1rem;
+      }
+
+      .chart-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .chart-head p {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+      }
+
+      svg {
+        width: 100%;
+        display: block;
+      }
+
+      .grid {
+        stroke: var(--border);
+        stroke-dasharray: 3 5;
+      }
+
+      .zero {
+        stroke: var(--text-muted);
+      }
+
+      .investment {
+        stroke: var(--success);
+        stroke-width: 2;
+        stroke-dasharray: 8 6;
+      }
+
+      .projection {
+        fill: none;
+        stroke: var(--accent);
+        stroke-width: 3;
+      }
+
+      svg text {
+        fill: var(--text-muted);
+        font-size: 11px;
+      }
+
+      .table-card {
+        margin-top: 1rem;
+        overflow: hidden;
+      }
+
+      .table-card h2 {
+        font-size: 1rem;
+        padding: 1rem 1rem 0;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        min-width: 760px;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        padding: 0.8rem 1rem;
+        border-bottom: 1px solid var(--border);
+        text-align: right;
+        white-space: nowrap;
+        font-size: 0.85rem;
+      }
+
+      th:first-child,
+      td:first-child {
+        text-align: left;
+      }
+
+      th {
+        color: var(--text-muted);
+        font-weight: 500;
+      }
+
+      tr.payback {
+        background: rgba(79, 140, 255, 0.12);
+      }
+
+      @media (max-width: 900px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        .metrics {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 640px) {
+        main {
+          padding: 1rem 0;
+        }
+
+        .heading,
+        .chart-head {
+          flex-direction: column;
+        }
+
+        .metrics {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-inner">
+        <div class="brand">Kaufmann Lab Calculator</div>
+      </div>
+    </header>
+
+    <main>
+      <section class="heading">
+        <div>
+          <h1>Calculadora de Payback</h1>
+          <p>Proyecta el margen mensual de un producto y visualiza cuando recupera la inversion de desarrollo.</p>
+        </div>
+        <button id="reset" type="button">Restablecer</button>
+      </section>
+
+      <section class="layout">
+        <div class="panel">
+          <label>Inversion en desarrollo <input id="investment" type="number" /></label>
+          <label>Ingresos del mes 1 <input id="revenue" type="number" /></label>
+          <label>Costo variable (%) <input id="variableRate" type="number" /></label>
+          <label>Costos fijos mensuales <input id="fixedCosts" type="number" /></label>
+          <label>Crecimiento mensual esperado (%) <input id="growthRate" type="number" /></label>
+          <label>Horizonte de proyeccion (meses) <input id="months" type="number" /></label>
+        </div>
+
+        <div class="analysis">
+          <div class="metrics">
+            <article class="metric"><span>Margen contribucion</span><strong id="marginRate"></strong></article>
+            <article class="metric"><span>Margen mes 1</span><strong id="monthOneMargin"></strong></article>
+            <article class="metric accent"><span>Payback</span><strong id="payback"></strong></article>
+            <article class="metric"><span>ROI al final</span><strong id="roi"></strong></article>
+          </div>
+
+          <div class="chart">
+            <div class="chart-head">
+              <div>
+                <h2>Margen acumulado</h2>
+                <p id="finalMargin"></p>
+              </div>
+            </div>
+            <svg id="chart" viewBox="0 0 760 320" aria-label="Grafico de payback"></svg>
+          </div>
+        </div>
+      </section>
+
+      <section class="table-card">
+        <h2>Detalle mensual</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Mes</th>
+                <th>Ingresos</th>
+                <th>Costos variables</th>
+                <th>Costos fijos</th>
+                <th>Margen</th>
+                <th>Margen acumulado</th>
+                <th>ROI acumulado</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const defaults = {
+        investment: 30000000,
+        revenue: 6000000,
+        variableRate: 35,
+        fixedCosts: 1200000,
+        growthRate: 3,
+        months: 24,
+      };
+
+      const ids = Object.keys(defaults);
+      const money = (value) =>
+        new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(value);
+      const percent = (value) =>
+        new Intl.NumberFormat('es-CL', { style: 'percent', maximumFractionDigits: 1 }).format(value);
+
+      function read() {
+        return Object.fromEntries(ids.map((id) => [id, Number(document.getElementById(id).value)]));
+      }
+
+      function calculate(input) {
+        const rows = [];
+        let accumulated = 0;
+        let paybackMonth = input.investment === 0 ? 0 : null;
+
+        for (let month = 1; month <= Math.max(Math.round(input.months), 1); month += 1) {
+          const revenue = Math.max(input.revenue, 0) * Math.pow(1 + input.growthRate / 100, month - 1);
+          const variableCosts = revenue * Math.min(Math.max(input.variableRate, 0), 100) / 100;
+          const fixedCosts = Math.max(input.fixedCosts, 0);
+          const margin = revenue - variableCosts - fixedCosts;
+          accumulated += margin;
+          if (paybackMonth === null && accumulated >= input.investment) paybackMonth = month;
+          rows.push({ month, revenue, variableCosts, fixedCosts, margin, accumulated, roi: accumulated / input.investment });
+        }
+
+        return { rows, paybackMonth };
+      }
+
+      function render() {
+        const input = read();
+        const result = calculate(input);
+        const last = result.rows[result.rows.length - 1];
+        const marginRate = 1 - Math.min(Math.max(input.variableRate, 0), 100) / 100;
+        document.getElementById('marginRate').textContent = percent(marginRate);
+        document.getElementById('monthOneMargin').textContent = money(result.rows[0].margin);
+        document.getElementById('payback').textContent =
+          result.paybackMonth === null ? `No se alcanza en ${input.months} meses` : result.paybackMonth === 0 ? 'Inmediato' : `Mes ${result.paybackMonth}`;
+        document.getElementById('roi').textContent = percent(last.roi);
+        document.getElementById('finalMargin').textContent = `${money(last.accumulated)} al mes ${input.months}`;
+
+        document.getElementById('rows').innerHTML = result.rows.map((row) => `
+          <tr class="${row.month === result.paybackMonth ? 'payback' : ''}">
+            <td>M${row.month}</td>
+            <td>${money(row.revenue)}</td>
+            <td>${money(row.variableCosts)}</td>
+            <td>${money(row.fixedCosts)}</td>
+            <td>${money(row.margin)}</td>
+            <td>${money(row.accumulated)}</td>
+            <td>${percent(row.roi)}</td>
+          </tr>
+        `).join('');
+
+        drawChart(input, result);
+      }
+
+      function drawChart(input, result) {
+        const svg = document.getElementById('chart');
+        const values = result.rows.map((row) => row.accumulated).concat([0, input.investment]);
+        const min = Math.min(...values);
+        const max = Math.max(...values);
+        const range = max - min || 1;
+        const x = (month) => 54 + ((month - 1) / Math.max(input.months - 1, 1)) * 676;
+        const y = (value) => 284 - ((value - min) / range) * 248;
+        const ticks = Array.from({ length: 5 }, (_, index) => min + ((max - min) / 4) * index);
+        const points = result.rows.map((row) => `${x(row.month)},${y(row.accumulated)}`).join(' ');
+        const payback = result.rows.find((row) => row.month === result.paybackMonth);
+
+        svg.innerHTML = `
+          ${ticks.map((tick) => `<line class="grid" x1="54" y1="${y(tick)}" x2="730" y2="${y(tick)}"></line><text x="46" y="${y(tick) + 4}" text-anchor="end">${money(tick)}</text>`).join('')}
+          <line class="zero" x1="54" y1="${y(0)}" x2="730" y2="${y(0)}"></line>
+          <line class="investment" x1="54" y1="${y(input.investment)}" x2="730" y2="${y(input.investment)}"></line>
+          <polyline class="projection" points="${points}"></polyline>
+          ${payback ? `<line class="investment" x1="${x(payback.month)}" y1="28" x2="${x(payback.month)}" y2="284"></line><circle cx="${x(payback.month)}" cy="${y(payback.accumulated)}" r="6" fill="#4f8cff"></circle>` : ''}
+          ${result.rows.filter((row) => row.month === 1 || row.month === input.months || row.month % 3 === 0).map((row) => `<text x="${x(row.month)}" y="308" text-anchor="middle">M${row.month}</text>`).join('')}
+        `;
+      }
+
+      ids.forEach((id) => {
+        const input = document.getElementById(id);
+        input.value = defaults[id];
+        input.addEventListener('input', render);
+      });
+
+      document.getElementById('reset').addEventListener('click', () => {
+        ids.forEach((id) => document.getElementById(id).value = defaults[id]);
+        render();
+      });
+
+      render();
+    </script>
+  </body>
+</html>
