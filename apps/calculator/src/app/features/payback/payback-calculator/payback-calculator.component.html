@@ -1,0 +1,145 @@
+<section class="payback-page">
+  <div class="page-heading">
+    <div>
+      <h1>Calculadora de Payback</h1>
+      <p>Proyecta el margen mensual de un producto y visualiza cuándo recupera la inversión de desarrollo.</p>
+    </div>
+    <button class="btn btn-ghost" type="button" (click)="reset()">Restablecer</button>
+  </div>
+
+  <div class="layout">
+    <aside class="input-panel">
+      <label>
+        <span>Inversión en desarrollo</span>
+        <input type="number" [ngModel]="inputs().investment" (ngModelChange)="update('investment', $event)" min="0" />
+      </label>
+
+      <label>
+        <span>Ingresos del mes 1</span>
+        <input type="number" [ngModel]="inputs().monthlyRevenue" (ngModelChange)="update('monthlyRevenue', $event)" min="0" />
+      </label>
+
+      <label>
+        <span>Costo variable</span>
+        <div class="input-with-suffix">
+          <input type="number" [ngModel]="inputs().variableCostRate" (ngModelChange)="update('variableCostRate', $event)" min="0" max="100" />
+          <span>%</span>
+        </div>
+      </label>
+
+      <label>
+        <span>Costos fijos mensuales</span>
+        <input type="number" [ngModel]="inputs().fixedMonthlyCosts" (ngModelChange)="update('fixedMonthlyCosts', $event)" min="0" />
+      </label>
+
+      <label>
+        <span>Crecimiento mensual esperado</span>
+        <div class="input-with-suffix">
+          <input type="number" [ngModel]="inputs().growthRate" (ngModelChange)="update('growthRate', $event)" />
+          <span>%</span>
+        </div>
+      </label>
+
+      <label>
+        <span>Horizonte de proyección</span>
+        <div class="input-with-suffix">
+          <input type="number" [ngModel]="inputs().projectionMonths" (ngModelChange)="update('projectionMonths', $event)" min="1" />
+          <span>meses</span>
+        </div>
+      </label>
+    </aside>
+
+    <div class="analysis-panel">
+      <div class="metric-grid">
+        <article>
+          <span>Margen contribución</span>
+          <strong>{{ formatPercent(result().contributionMarginRate) }}</strong>
+        </article>
+        <article>
+          <span>Margen mes 1</span>
+          <strong>{{ formatCurrency(result().firstMonthMargin) }}</strong>
+        </article>
+        <article class="accent">
+          <span>Payback</span>
+          <strong>{{ result().paybackLabel }}</strong>
+        </article>
+        <article>
+          <span>ROI al final</span>
+          <strong>{{ formatPercent(result().finalRoi) }}</strong>
+        </article>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <h2>Margen acumulado</h2>
+            <p>{{ formatCurrency(result().finalAccumulatedMargin) }} al mes {{ inputs().projectionMonths }}</p>
+          </div>
+          <div class="legend">
+            <span><i class="line cumulative"></i>Margen acumulado</span>
+            <span><i class="line investment"></i>Inversión</span>
+          </div>
+        </div>
+
+        <svg [attr.viewBox]="'0 0 ' + chartWidth + ' ' + chartHeight" role="img" aria-label="Proyección de payback">
+          @for (tick of yTicks; track tick) {
+            <g>
+              <line class="grid-line" x1="54" [attr.y1]="y(tick)" [attr.x2]="chartWidth - 30" [attr.y2]="y(tick)" />
+              <text x="46" [attr.y]="y(tick) + 4">{{ formatCurrency(tick) }}</text>
+            </g>
+          }
+
+          <line class="axis-line" x1="54" [attr.y1]="zeroLineY" [attr.x2]="chartWidth - 30" [attr.y2]="zeroLineY" />
+          <line class="investment-line" x1="54" [attr.y1]="investmentLineY" [attr.x2]="chartWidth - 30" [attr.y2]="investmentLineY" />
+          <polyline class="projection-line" [attr.points]="chartPoints" />
+
+          @if (paybackPoint) {
+            <line class="payback-guide" [attr.x1]="x(paybackPoint.month)" y1="28" [attr.x2]="x(paybackPoint.month)" [attr.y2]="chartHeight - 36" />
+            <circle class="payback-dot" [attr.cx]="x(paybackPoint.month)" [attr.cy]="y(paybackPoint.accumulatedMargin)" r="6" />
+            <text class="payback-label" [attr.x]="x(paybackPoint.month)" y="20">Payback mes {{ paybackPoint.month }}</text>
+          }
+
+          @for (point of result().projection; track trackByMonth($index, point)) {
+            @if (point.month === 1 || point.month === inputs().projectionMonths || point.month % 3 === 0) {
+              <text class="month-label" [attr.x]="x(point.month)" [attr.y]="chartHeight - 12">M{{ point.month }}</text>
+            }
+          }
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-header">
+      <h2>Detalle mensual</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Mes</th>
+            <th>Ingresos</th>
+            <th>Costos variables</th>
+            <th>Costos fijos</th>
+            <th>Margen</th>
+            <th>Margen acumulado</th>
+            <th>ROI acumulado</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of result().projection; track row.month) {
+            <tr [class.is-payback]="row.month === result().paybackMonth">
+              <td>M{{ row.month }}</td>
+              <td>{{ formatCurrency(row.revenue) }}</td>
+              <td>{{ formatCurrency(row.variableCosts) }}</td>
+              <td>{{ formatCurrency(row.fixedCosts) }}</td>
+              <td>{{ formatCurrency(row.margin) }}</td>
+              <td>{{ formatCurrency(row.accumulatedMargin) }}</td>
+              <td>{{ formatPercent(row.roi) }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

@@ -1,7 +1,14 @@
 import { Route } from '@angular/router';
 
 export const appRoutes: Route[] = [
-  { path: '', redirectTo: 'estimates', pathMatch: 'full' },
+  { path: '', redirectTo: 'payback', pathMatch: 'full' },
+  {
+    path: 'payback',
+    loadComponent: () =>
+      import('./features/payback/payback-calculator/payback-calculator.component').then(
+        (m) => m.PaybackCalculatorComponent
+      ),
+  },
   {
     path: 'estimates',
     loadComponent: () =>
