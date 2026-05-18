@@ -27,6 +27,12 @@
   }
 }
 
+.page-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
 .layout {
   align-items: stretch;
   gap: 1rem;

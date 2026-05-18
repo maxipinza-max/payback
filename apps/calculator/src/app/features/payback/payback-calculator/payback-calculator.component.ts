@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 export interface PaybackInputs {
   investment: number;
@@ -30,6 +32,10 @@ export interface PaybackResult {
   finalRoi: number;
   projection: MonthlyProjection[];
 }
+
+type PdfDocumentWithTable = jsPDF & {
+  lastAutoTable: { finalY: number };
+};
 
 const defaultInputs: PaybackInputs = {
   investment: 30_000_000,
@@ -106,6 +112,77 @@ export class PaybackCalculatorComponent {
 
   reset(): void {
     this.inputs.set({ ...defaultInputs });
+  }
+
+  downloadPdf(): void {
+    const inputs = this.inputs();
+    const result = this.result();
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    doc.setFillColor(13, 15, 20);
+    doc.rect(0, 0, pageWidth, 34, 'F');
+    doc.setTextColor(79, 140, 255);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text('SIMULACION DE PAYBACK', 14, 12);
+    doc.setTextColor(232, 237, 245);
+    doc.setFontSize(18);
+    doc.text('Calculadora de Payback', 14, 24);
+
+    autoTable(doc, {
+      startY: 42,
+      head: [['Supuesto', 'Valor']],
+      body: [
+        ['Inversion en desarrollo', this.formatCurrency(inputs.investment)],
+        ['Ingresos del mes 1', this.formatCurrency(inputs.monthlyRevenue)],
+        ['Costo variable', `${inputs.variableCostRate}%`],
+        ['Costos fijos mensuales', this.formatCurrency(inputs.fixedMonthlyCosts)],
+        ['Crecimiento mensual esperado', `${inputs.growthRate}%`],
+        ['Horizonte de proyeccion', `${inputs.projectionMonths} meses`],
+      ],
+      theme: 'grid',
+      headStyles: { fillColor: [30, 37, 53], textColor: [232, 237, 245] },
+      bodyStyles: { fillColor: [16, 19, 26], textColor: [158, 173, 200] },
+      alternateRowStyles: { fillColor: [22, 27, 37] },
+    });
+    const pdfWithTable = doc as PdfDocumentWithTable;
+
+    autoTable(doc, {
+      startY: pdfWithTable.lastAutoTable.finalY + 8,
+      head: [['Indicador', 'Resultado']],
+      body: [
+        ['Margen de contribucion', this.formatPercent(result.contributionMarginRate)],
+        ['Margen mes 1', this.formatCurrency(result.firstMonthMargin)],
+        ['Payback', result.paybackLabel],
+        ['ROI al final', this.formatPercent(result.finalRoi)],
+        ['Margen acumulado final', this.formatCurrency(result.finalAccumulatedMargin)],
+      ],
+      theme: 'grid',
+      headStyles: { fillColor: [30, 37, 53], textColor: [232, 237, 245] },
+      bodyStyles: { fillColor: [16, 19, 26], textColor: [158, 173, 200] },
+      alternateRowStyles: { fillColor: [22, 27, 37] },
+    });
+
+    autoTable(doc, {
+      startY: pdfWithTable.lastAutoTable.finalY + 8,
+      head: [['Mes', 'Ingresos', 'Costos variables', 'Costos fijos', 'Margen', 'Acumulado', 'ROI']],
+      body: result.projection.map((row) => [
+        `M${row.month}`,
+        this.formatCurrency(row.revenue),
+        this.formatCurrency(row.variableCosts),
+        this.formatCurrency(row.fixedCosts),
+        this.formatCurrency(row.margin),
+        this.formatCurrency(row.accumulatedMargin),
+        this.formatPercent(row.roi),
+      ]),
+      theme: 'grid',
+      headStyles: { fillColor: [30, 37, 53], textColor: [232, 237, 245], fontSize: 7 },
+      bodyStyles: { fillColor: [16, 19, 26], textColor: [158, 173, 200], fontSize: 7 },
+      alternateRowStyles: { fillColor: [22, 27, 37] },
+    });
+
+    doc.save('simulacion-payback.pdf');
   }
 
   formatCurrency(value: number): string {

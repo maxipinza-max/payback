@@ -4,7 +4,10 @@
       <h1>Calculadora de Payback</h1>
       <p>Proyecta el margen mensual de un producto y visualiza cuándo recupera la inversión de desarrollo.</p>
     </div>
-    <button class="btn btn-ghost" type="button" (click)="reset()">Restablecer</button>
+    <div class="page-actions">
+      <button class="btn btn-ghost" type="button" (click)="reset()">Restablecer</button>
+      <button class="btn btn-primary" type="button" (click)="downloadPdf()">Descargar PDF</button>
+    </div>
   </div>
 
   <div class="layout">

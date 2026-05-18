@@ -4,6 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Calculadora de Payback</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js"></script>
     <style>
       :root {
         --bg: #0d0f14;
@@ -73,6 +75,18 @@
       .heading p {
         margin-top: 0.35rem;
         color: var(--text-muted);
+      }
+
+      .actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      .primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
       }
 
       button,
@@ -287,7 +301,10 @@
           <h1>Calculadora de Payback</h1>
           <p>Proyecta el margen mensual de un producto y visualiza cuando recupera la inversion de desarrollo.</p>
         </div>
-        <button id="reset" type="button">Restablecer</button>
+        <div class="actions">
+          <button id="reset" type="button">Restablecer</button>
+          <button id="download" class="primary" type="button">Descargar PDF</button>
+        </div>
       </section>
 
       <section class="layout">
@@ -406,6 +423,77 @@
         drawChart(input, result);
       }
 
+      function downloadPdf() {
+        const input = read();
+        const result = calculate(input);
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+        const pageWidth = doc.internal.pageSize.getWidth();
+
+        doc.setFillColor(13, 15, 20);
+        doc.rect(0, 0, pageWidth, 34, 'F');
+        doc.setTextColor(79, 140, 255);
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'bold');
+        doc.text('SIMULACION DE PAYBACK', 14, 12);
+        doc.setTextColor(232, 237, 245);
+        doc.setFontSize(18);
+        doc.text('Calculadora de Payback', 14, 24);
+
+        doc.autoTable({
+          startY: 42,
+          head: [['Supuesto', 'Valor']],
+          body: [
+            ['Inversion en desarrollo', money(input.investment)],
+            ['Ingresos del mes 1', money(input.revenue)],
+            ['Costo variable', `${input.variableRate}%`],
+            ['Costos fijos mensuales', money(input.fixedCosts)],
+            ['Crecimiento mensual esperado', `${input.growthRate}%`],
+            ['Horizonte de proyeccion', `${input.months} meses`],
+          ],
+          theme: 'grid',
+          headStyles: { fillColor: [30, 37, 53], textColor: [232, 237, 245] },
+          bodyStyles: { fillColor: [16, 19, 26], textColor: [158, 173, 200] },
+          alternateRowStyles: { fillColor: [22, 27, 37] },
+        });
+
+        doc.autoTable({
+          startY: doc.lastAutoTable.finalY + 8,
+          head: [['Indicador', 'Resultado']],
+          body: [
+            ['Margen de contribucion', percent(1 - Math.min(Math.max(input.variableRate, 0), 100) / 100)],
+            ['Margen mes 1', money(result.rows[0].margin)],
+            ['Payback', result.paybackMonth === null ? `No se alcanza en ${input.months} meses` : result.paybackMonth === 0 ? 'Inmediato' : `Mes ${result.paybackMonth}`],
+            ['ROI al final', percent(result.rows[result.rows.length - 1].roi)],
+            ['Margen acumulado final', money(result.rows[result.rows.length - 1].accumulated)],
+          ],
+          theme: 'grid',
+          headStyles: { fillColor: [30, 37, 53], textColor: [232, 237, 245] },
+          bodyStyles: { fillColor: [16, 19, 26], textColor: [158, 173, 200] },
+          alternateRowStyles: { fillColor: [22, 27, 37] },
+        });
+
+        doc.autoTable({
+          startY: doc.lastAutoTable.finalY + 8,
+          head: [['Mes', 'Ingresos', 'Costos variables', 'Costos fijos', 'Margen', 'Acumulado', 'ROI']],
+          body: result.rows.map((row) => [
+            `M${row.month}`,
+            money(row.revenue),
+            money(row.variableCosts),
+            money(row.fixedCosts),
+            money(row.margin),
+            money(row.accumulated),
+            percent(row.roi),
+          ]),
+          theme: 'grid',
+          headStyles: { fillColor: [30, 37, 53], textColor: [232, 237, 245], fontSize: 7 },
+          bodyStyles: { fillColor: [16, 19, 26], textColor: [158, 173, 200], fontSize: 7 },
+          alternateRowStyles: { fillColor: [22, 27, 37] },
+        });
+
+        doc.save('simulacion-payback.pdf');
+      }
+
       function drawChart(input, result) {
         const svg = document.getElementById('chart');
         const values = result.rows.map((row) => row.accumulated).concat([0, input.investment]);
@@ -438,6 +526,7 @@
         ids.forEach((id) => document.getElementById(id).value = defaults[id]);
         render();
       });
+      document.getElementById('download').addEventListener('click', downloadPdf);
 
       render();
     </script>
