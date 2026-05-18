@@ -25,3 +25,11 @@ npm run start:web
 ```
 
 La app queda disponible por defecto en `http://localhost:4200`.
+
+## Publicacion
+
+Para publicar la version web en GitHub Pages:
+
+```bash
+npm run deploy
+```

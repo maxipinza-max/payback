@@ -7,7 +7,7 @@
     "start:api": "npx nx serve api",
     "build:web": "npx nx build calculator --configuration=production",
     "build:api": "npx nx build api --configuration=production",
-    "deploy": "npm run build:web && npx gh-pages -d dist/apps/calculator/browser"
+    "deploy": "npx nx build calculator --configuration=github-pages && npx gh-pages -d dist/apps/calculator/browser"
   },
   "private": true,
   "devDependencies": {

@@ -37,12 +37,18 @@
             }
           ],
           "outputHashing": "all",
-          "baseHref": "/calculadora/"
+          "baseHref": "/payback/"
         },
         "development": {
           "optimization": false,
           "extractLicenses": false,
           "sourceMap": true
+        },
+        "github-pages": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": false,
+          "baseHref": "/payback/"
         }
       },
       "defaultConfiguration": "production"
